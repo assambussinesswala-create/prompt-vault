@@ -26,12 +26,34 @@ function readBody(req) {
   return body
 }
 
+// Makes an error message safe to put in server logs: removes anything that looks like a
+// connection string / URL, a Neon host, a Clerk key, a token or a password, then shortens it.
+function safeText(value, max = 200) {
+  return String(value == null ? '' : value)
+    .replace(/[a-z][a-z0-9+.-]*:\/\/[^\s'"]+/gi, '[url]') // connection strings and URLs
+    .replace(/\b[\w.-]+\.neon\.tech\b/gi, '[host]') // Neon host names
+    .replace(/\b(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9]+/g, '[key]') // Clerk keys
+    .replace(/eyJ[\w-]+\.[\w-]+\.[\w-]+/g, '[token]') // JWT tokens
+    .replace(/Bearer\s+\S+/gi, 'Bearer [token]')
+    .replace(/password\s*[=:]\s*\S+/gi, 'password=[hidden]')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max)
+}
+
 export function sendError(res, err) {
   if (err instanceof HttpError) {
     return res.status(err.status).json({ error: err.message, code: err.code })
   }
-  // Log only the error type and code. Never log messages, bodies or credentials.
-  console.error('[api] unexpected error:', err && err.name, err && err.code)
+  // Diagnostic log: only fixed, sanitized fields. Never the whole error object, request,
+  // headers, body, token or credentials. (err.detail is deliberately NOT logged: it can hold row values.)
+  console.error('[api] unexpected error:', JSON.stringify({
+    name: safeText(err && err.name, 60),
+    code: safeText(err && err.code, 20), // PostgreSQL error code, e.g. 42P01, when the database reports one
+    message: safeText(err && err.message),
+    cause: safeText(err && err.sourceError && err.sourceError.message), // set by the Neon driver on connection failures
+  }))
+  // The browser always gets the same generic message.
   return res.status(500).json({ error: 'Something went wrong on the server. Please try again.', code: 'SERVER_ERROR' })
 }
 
