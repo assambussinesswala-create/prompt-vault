@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+[data-theme='light'] {
+  /* Prompt Vault PK palette */
+  --c-ink: 248 250 252;      /* main background  #F8FAFC */
+  --c-panel: 255 255 255;    /* cards, sidebar   #FFFFFF */
+  --c-raised: 239 246 255;   /* pale blue        #EFF6FF */
+  --c-tint: 219 234 254;     /* light blue       #DBEAFE */
+  --c-line: 226 232 240;     /* borders          #E2E8F0 */
+  --c-fg: 30 41 59;          /* main text        #1E293B */
+  --c-muted: 100 116 139;    /* secondary text   #64748B */
+  --c-navy: 15 23 42;        /* headings         #0F172A */
+  --c-brass: 37 99 235;      /* primary blue     #2563EB (name kept so existing pages restyle) */
+  --c-brass-ink: 255 255 255;
+  --c-danger: 220 38 38;     /* error            #DC2626 */
+  --c-ok: 22 163 74;         /* success          #16A34A */
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  --c-ink: 15 23 42;
+  --c-panel: 20 31 54;
+  --c-raised: 30 41 66;
+  --c-tint: 30 58 138;
+  --c-line: 51 65 95;
+  --c-fg: 226 232 240;
+  --c-muted: 148 163 184;
+  --c-navy: 241 245 249;
+  --c-brass: 96 165 250;
+  --c-brass-ink: 15 23 42;
+  --c-danger: 248 113 113;
+  --c-ok: 74 222 128;
+  color-scheme: dark;
+}
+
+h1, h2, h3 { color: rgb(var(--c-navy)); }
+html, body, #root { height: 100%; }
+body {
+  @apply bg-ink text-fg font-sans antialiased;
+  font-size: 15px;
+  line-height: 1.55;
+}
+:focus-visible { outline: 2px solid rgb(var(--c-brass)); outline-offset: 2px; border-radius: 6px; }
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-panel px-3.5 py-2 text-sm font-medium text-fg transition-colors hover:border-brass/50 hover:bg-raised disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary { @apply border-brass bg-brass text-brass-ink hover:bg-brass hover:brightness-95; }
+  .btn-danger { @apply border-danger/40 text-danger hover:border-danger/60 hover:bg-danger/10; }
+  .btn-ghost { @apply border-transparent bg-transparent hover:bg-raised; }
+  .btn-sm { @apply px-2.5 py-1.5 text-xs; }
+  .icon-btn { @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-raised hover:text-fg; }
+  .field {
+    @apply w-full max-w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm text-fg placeholder:text-muted/70 focus:border-brass focus:outline-none focus:ring-2 focus:ring-brass/20;
+  }
+  .label { @apply mb-1.5 block text-sm font-medium text-fg; }
+  .hint { @apply mt-1 text-xs text-muted; }
+  .surface { @apply rounded-xl border border-line bg-panel shadow-[0_1px_2px_rgba(15,23,42,0.04)]; }
+  .chip { @apply inline-flex items-center gap-1 rounded-md bg-raised px-2 py-0.5 text-xs font-medium text-brass; }
+  .alert-error { @apply flex items-start gap-3 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm; }
+  .page-title { @apply font-display text-2xl font-extrabold tracking-tight text-navy sm:text-3xl; }
+}
+
+.prompt-text { font-family: theme('fontFamily.mono'); font-size: 13.5px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+
+.md { line-height: 1.7; word-break: break-word; }
+.md h1 { @apply font-display text-2xl font-bold mt-5 mb-2; }
+.md h2 { @apply font-display text-xl font-bold mt-5 mb-2; }
+.md h3 { @apply font-display text-lg font-bold mt-4 mb-1.5; }
+.md h4, .md h5, .md h6 { @apply font-semibold mt-3 mb-1; }
+.md p { @apply my-2.5; }
+.md ul { @apply my-2.5 list-disc pl-6; }
+.md ol { @apply my-2.5 list-decimal pl-6; }
+.md li { @apply my-0.5; }
+.md blockquote { @apply my-3 border-l-2 border-brass pl-4 text-muted; }
+.md code { @apply rounded bg-raised px-1 py-0.5 font-mono text-[0.85em]; }
+.md pre { @apply my-3 overflow-x-auto rounded-lg border border-line bg-ink p-3; }
+.md pre code { @apply bg-transparent p-0; }
+.md hr { @apply my-4 border-line; }
+.md a { @apply text-brass underline underline-offset-2; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.toast-in { animation: toast-in .18s ease-out; }

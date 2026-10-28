@@ -1,0 +1,13 @@
+node_modules
+dist
+.DS_Store
+*.log
+.env
+.env.*
+.vercel
+.netlify
+*.tsbuildinfo
+
+# keep the template, ignore real env files
+!.env.example
+.vercel
